@@ -1,0 +1,17 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - echo Installing root requirements
+      - python -m pip install --upgrade pip
+      - pip install -r services/product_service/requirements.txt
+      - pip install -r services/order_service/requirements.txt
+  build:
+    commands:
+      - echo Running tests
+      - pytest -q
+artifacts:
+  files:
+    - '**/*'

@@ -1,25 +1,26 @@
 # CNA-Introspect-1B Microservices
 
-This workspace contains two minimal Python microservices:
+## Project Structure
+```
+├── services/           # Microservices source code
+│   ├── product_service/
+│   └── order_service/
+├── deployment/         # Deployment configurations
+│   ├── current/        # Active deployment scripts & manifests
+│   └── legacy/         # Previous deployment files
+├── docs/              # Documentation
+├── buildspec.yml      # AWS CodeBuild configuration
+└── requirements.txt   # Root dependencies
+```
 
-- ProductService (FastAPI)
-- OrderService (FastAPI)
+## Quick Start
+```bash
+cd deployment/current
+./deploy-all.sh
+```
 
-Each service has a small API, tests, and a Dockerfile. There's a top-level `buildspec.yml` suitable for AWS CodeBuild that runs tests.
+## Services
+- **ProductService**: FastAPI service (port 8001)
+- **OrderService**: FastAPI service (port 8002)
 
-Quick local steps:
-
-1. Create a virtualenv and install dependencies for a service:
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r services/product_service/requirements.txt
-
-2. Run the app (example):
-   uvicorn services.product_service.app:app --reload --port 8001
-
-3. Run tests:
-   pytest -q
-
-AWS steps (these are automated in this workflow):
-- Create CodeCommit repository `CNA-Introspect-1B` using AWS CLI with profile `selvam`.
-- Push the code and create a CodeBuild project that uses the repo and `buildspec.yml`.
+Both services are Dapr-enabled with AWS SNS/SQS pub/sub messaging.

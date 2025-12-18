@@ -5,6 +5,7 @@
 - Docker installed
 - kubectl installed
 - Helm installed
+- eksctl installed (optional)
 
 ## Quick Deploy
 Run the complete pipeline:
@@ -12,36 +13,76 @@ Run the complete pipeline:
 ./deploy-all.sh
 ```
 
-## Individual Steps
+## Individual Steps (Correct Order)
 
-### 1. Setup ECR Repositories
+### 1. Create IAM Roles
 ```bash
-./scripts/01-setup-ecr.sh
+./scripts/01-create-iam-roles.sh
+```
+Creates EKS service role and nodegroup role with all required policies.
+
+### 2. Setup ECR Repositories
+```bash
+./scripts/02-setup-ecr.sh
+```
+Creates ECR repositories for product-service and order-service.
+
+### 3. Build and Push Docker Images
+```bash
+./scripts/03-build-push-images.sh
+```
+Builds Docker images and pushes to ECR repositories.
+
+### 4. Create EKS Cluster
+```bash
+./scripts/04-create-eks-cluster.sh
+```
+Creates EKS cluster and initial nodegroup using existing IAM roles.
+
+### 5. Install Dapr
+```bash
+./scripts/05-install-dapr.sh
+```
+Installs Dapr control plane on EKS cluster.
+
+### 6. Setup AWS SNS/SQS
+```bash
+./scripts/06-setup-sns-pubsub.sh
+```
+Creates SNS topic and SQS queue for pub/sub messaging.
+
+### 7. Deploy Services
+```bash
+./scripts/07-deploy-services.sh
+```
+Deploys Dapr-enabled microservices with pub/sub configuration.
+
+### 8. Install EKS Add-ons
+```bash
+./scripts/09-install-eks-addons.sh
+```
+Installs CloudWatch Observability, Pod Identity Agent, and Metrics Server.
+
+## Management Scripts
+
+### Add Worker Nodes
+```bash
+./scripts/08-add-worker-nodes.sh
 ```
 
-### 2. Build and Push Docker Images
+### Add NodeGroup
 ```bash
-./scripts/02-build-push-images.sh
+./scripts/10-add-nodegroup.sh [name] [instance-type] [size]
 ```
 
-### 3. Create EKS Cluster
+### Scale NodeGroup
 ```bash
-./scripts/03-create-eks-cluster.sh
+./scripts/12-scale-nodegroup.sh [name] [desired] [min] [max]
 ```
 
-### 4. Install Dapr
+### Install Kubernetes Dashboard
 ```bash
-./scripts/04-install-dapr.sh
-```
-
-### 5. Setup AWS SNS/SQS
-```bash
-./scripts/05-setup-sns-pubsub.sh
-```
-
-### 6. Deploy Services
-```bash
-./scripts/06-deploy-services.sh
+./scripts/15-install-k8s-dashboard.sh
 ```
 
 ## Architecture
@@ -49,3 +90,5 @@ Run the complete pipeline:
 - **Order Service**: Dapr-enabled subscriber (port 8002)
 - **Pub/Sub**: AWS SNS/SQS via Dapr component
 - **Platform**: EKS cluster with Dapr runtime
+- **Monitoring**: CloudWatch + Metrics Server
+- **Registry**: Amazon ECR

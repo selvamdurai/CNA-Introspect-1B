@@ -1,0 +1,20 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+  type: pubsub.aws.snssqs
+  version: v1
+  metadata:
+  - name: region
+    value: "us-east-1"
+  - name: accessKey
+    value: ""
+  - name: secretKey
+    value: ""
+  - name: sessionToken
+    value: ""
+  - name: messageVisibilityTimeout
+    value: "10"
+  - name: messageRetryLimit
+    value: "3"

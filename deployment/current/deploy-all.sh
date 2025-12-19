@@ -6,36 +6,56 @@ echo "=== Complete Deployment Pipeline ==="
 # Make all scripts executable
 chmod +x scripts/*.sh
 
-# 1. Create IAM roles
+# Phase 1: AWS Infrastructure Setup (Parallel-ready)
+echo "Phase 1: AWS Infrastructure Setup"
 echo "Step 1: Creating IAM roles..."
 ./scripts/01-create-iam-roles.sh
 
-# 2. Setup ECR
 echo "Step 2: Setting up ECR repositories..."
 ./scripts/02-setup-ecr.sh
 
-# 3. Build and push images
+# Phase 2: Container Build & EKS Creation (Can run in parallel)
+echo "Phase 2: Container & Cluster Preparation"
 echo "Step 3: Building and pushing Docker images..."
-./scripts/03-build-push-images.sh
+./scripts/03-build-push-images.sh &
+BUILD_PID=$!
 
-# 4. Create EKS cluster
 echo "Step 4: Creating EKS cluster..."
-./scripts/04-create-eks-cluster.sh
+./scripts/04-create-eks-cluster.sh &
+CLUSTER_PID=$!
 
-# 5. Install Dapr
-echo "Step 5: Installing Dapr..."
-./scripts/05-install-dapr.sh
+# Wait for both to complete
+echo "Waiting for image build and cluster creation to complete..."
+wait $BUILD_PID
+echo "✓ Docker images ready"
+wait $CLUSTER_PID
+echo "✓ EKS cluster ready"
 
-# 6. Setup SNS/SQS
-echo "Step 6: Setting up AWS SNS/SQS..."
-./scripts/06-setup-sns-pubsub.sh
-
-# 7. Install EKS Add-ons
-echo "Step 7: Installing EKS Add-ons..."
+# Phase 3: Platform Setup (Sequential - depends on cluster)
+echo "Phase 3: Platform Configuration"
+echo "Step 5: Installing EKS Add-ons..."
 ./scripts/09-install-eks-addons.sh
 
-# 8. Deploy services
+echo "Step 6: Installing Dapr..."
+./scripts/05-install-dapr.sh
+
+echo "Step 7: Setting up AWS SNS/SQS..."
+./scripts/06-setup-sns-pubsub.sh
+
+# Phase 4: Application Deployment
+echo "Phase 4: Application Deployment"
 echo "Step 8: Deploying services..."
 ./scripts/07-deploy-services.sh
 
+# Phase 5: Health Analysis
+echo "Phase 5: AI-Powered Health Analysis"
+echo "Waiting for services to stabilize..."
+sleep 30
+echo "Running log analysis..."
+python3 scripts/17-enhanced-log-analyzer.py
+
 echo "=== Deployment Complete! ==="
+echo "Cluster Status:"
+kubectl get nodes
+echo "Services Status:"
+kubectl get pods,svc

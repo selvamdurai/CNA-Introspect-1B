@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "product-service"
+        dapr.io/app-port: "8001"
+        dapr.io/config: "dapr-config"
+    spec:
+      containers:
+      - name: product-service
+        image: 424987806936.dkr.ecr.us-east-1.amazonaws.com/product-service:latest
+        ports:
+        - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+  - port: 8001
+    targetPort: 8001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "order-service"
+        dapr.io/app-port: "8002"
+        dapr.io/config: "dapr-config"
+    spec:
+      containers:
+      - name: order-service
+        image: 424987806936.dkr.ecr.us-east-1.amazonaws.com/order-service:latest
+        ports:
+        - containerPort: 8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+  - port: 8002
+    targetPort: 8002

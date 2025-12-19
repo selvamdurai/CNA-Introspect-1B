@@ -45,3 +45,25 @@ def create_order(o: Order):
     _orders.append(o)
     logger.info(f"API: POST /orders - Output: {o.dict()}")
     return o
+
+@app.post("/dapr/subscribe")
+def subscribe():
+    subscriptions = [{
+        "pubsubname": "pubsub",
+        "topic": "orders",
+        "route": "/orders-handler"
+    }]
+    logger.info(f"Dapr subscriptions: {subscriptions}")
+    return subscriptions
+
+@app.post("/orders-handler")
+def handle_order_message(message: dict):
+    logger.info(f"Received Dapr message: {message}")
+    # Process the order message
+    try:
+        order_data = message.get("data", {})
+        logger.info(f"Processing order from pub/sub: {order_data}")
+        return {"status": "processed", "message": "Order received via Dapr"}
+    except Exception as e:
+        logger.error(f"Error processing Dapr message: {str(e)}")
+        return {"status": "error", "message": str(e)}

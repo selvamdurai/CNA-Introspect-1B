@@ -2,16 +2,21 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.10
+      python: 3.11
     commands:
       - echo Installing root requirements
       - python -m pip install --upgrade pip
-      - pip install -r services/product_service/requirements.txt
-      - pip install -r services/order_service/requirements.txt
+      - echo Building wheels for faster installs
+      - python -m pip wheel --wheel-dir /tmp/wheels -r services/product_service/requirements.txt || true
+      - python -m pip wheel --wheel-dir /tmp/wheels -r services/order_service/requirements.txt || true
+      - python -m pip install --no-index --find-links /tmp/wheels -r services/product_service/requirements.txt -r services/order_service/requirements.txt
   build:
     commands:
       - echo Running tests
       - pytest -q
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
 artifacts:
   files:
     - '**/*'

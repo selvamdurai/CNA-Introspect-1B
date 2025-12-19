@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 import logging
+import httpx
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -57,3 +59,25 @@ def create_product(p: Product):
     _products.append(p)
     logger.info(f"API: POST /products - Output: {p.dict()}")
     return p
+
+@app.post("/publish-order")
+def publish_order(order_data: dict):
+    logger.info(f"API: POST /publish-order - Input: {order_data}")
+    dapr_url = "http://localhost:3500/v1.0/publish/pubsub/orders"
+
+    @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=1, min=1, max=10))
+    def _publish(payload: dict):
+        with httpx.Client(timeout=5) as client:
+            resp = client.post(dapr_url, json=payload)
+            resp.raise_for_status()
+            return resp
+
+    try:
+        resp = _publish(order_data)
+        logger.info(f"Published to Dapr: {resp.status_code}")
+        result = {"status": "published", "data": order_data}
+        logger.info(f"API: POST /publish-order - Output: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"API: POST /publish-order - Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -21,9 +21,23 @@
 - eksctl installed (optional)
 
 ## Quick Start
+
+### Development (Fast)
+```bash
+cd deployment/current
+./deploy-fast.sh
+```
+
+### Complete Deployment
 ```bash
 cd deployment/current
 ./deploy-all.sh
+```
+
+### Production Ready
+```bash
+cd deployment/current
+./deploy-production.sh
 ```
 
 ## Deployment Steps

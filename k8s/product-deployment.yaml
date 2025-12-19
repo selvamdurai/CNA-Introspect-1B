@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  labels:
+    app: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "product-service"
+        dapr.io/app-port: "8001"
+    spec:
+      serviceAccountName: product-service-sa
+      containers:
+        - name: product-service
+          image: <ECR_ACCOUNT>.dkr.ecr.<region>.amazonaws.com/cna-introspect-1b-product-service:latest
+          ports:
+            - containerPort: 8001
+          startupProbe:
+            httpGet:
+              path: /v1.0/healthz
+              port: 3500
+            periodSeconds: 5
+            failureThreshold: 18
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

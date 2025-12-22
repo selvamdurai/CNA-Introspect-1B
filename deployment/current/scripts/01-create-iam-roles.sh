@@ -45,7 +45,7 @@ aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:i
 aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --profile $AWS_PROFILE
 aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --profile $AWS_PROFILE
 aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore --profile $AWS_PROFILE
-aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy --profile $AWS_PROFILE
+aws iam attach-role-policy --role-name eks-nodegroup-role --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy --profile $AWS_PROFILE
 
 echo "Waiting for IAM roles to propagate..."
 sleep 15

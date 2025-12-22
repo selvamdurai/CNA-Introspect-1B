@@ -1,0 +1,61 @@
+```mermaid
+graph TB
+  subgraph ECR[Amazon ECR]
+    ECRProd[(product-service repo)]
+    ECROrd[(order-service repo)]
+  end
+
+  subgraph EKS[Amazon EKS Cluster: cna-introspect-eks]
+    subgraph defaultNS[Namespace: default]
+      PS[Product Service\nFastAPI]
+      PSDapr[(Dapr Sidecar)]
+      OS[Order Service\nFastAPI]
+      OSDapr[(Dapr Sidecar)]
+    end
+    subgraph daprNS[Namespace: dapr-system]
+      DaprCP[Dapr Control Plane\n(operator / placement / scheduler / sentry / injector)]
+    end
+    subgraph cwNS[Namespace: amazon-cloudwatch]
+      FluentBit[Fluent Bit\n+ CloudWatch Agent]
+    end
+  end
+
+  subgraph PubSub[AWS SNS + SQS]
+    SNS[(SNS Topic\norders-topic)]
+    SQS[(SQS Queue\norders-queue)]
+  end
+
+  subgraph IAM[IAM & IRSA]
+    IRSA[dapr-pubsub-sa\nIRSA Role]
+    CWIRSA[cloudwatch-agent\nIRSA Role]
+  end
+
+  Dev[Dev Machine / CI]\n:::actor
+  CloudWatch[(Amazon CloudWatch\nLogs + Metrics)]
+
+  Dev --> |docker build/push| ECR
+  ECRProd --> |images| PSDapr
+  ECROrd --> |images| OSDapr
+
+  PSDapr --> |publish topic "orders"| SNS
+  SNS --> |fanout| SQS
+  SQS --> |deliver| OSDapr
+  PSDapr <-->|sidecar APIs| PS
+  OSDapr <-->|sidecar APIs| OS
+
+  DaprCP --> PSDapr
+  DaprCP --> OSDapr
+
+  IRSA --> |allow SNS/SQS access| PSDapr
+  IRSA --> OSDapr
+
+  FluentBit --> CloudWatch
+  CWIRSA --> |allow logs API| FluentBit
+
+  PS --> |application logs| FluentBit
+  OS --> |application logs| FluentBit
+  PSDapr --> |sidecar logs| FluentBit
+  OSDapr --> |sidecar logs| FluentBit
+
+  classDef actor fill:#f5f5f5,stroke:#555,stroke-width:1px,font-weight:bold;
+```

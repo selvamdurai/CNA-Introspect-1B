@@ -35,7 +35,7 @@ eksctl create iamserviceaccount \
     --name $EBS_SA_NAME \
     --namespace kube-system \
     --cluster $CLUSTER_NAME \
-    --attach-policy-arn arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy \
+    --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
     --approve \
     --override-existing-serviceaccounts \
     --region $REGION \

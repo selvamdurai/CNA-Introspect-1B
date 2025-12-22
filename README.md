@@ -66,12 +66,36 @@ cd deployment/current
 - **ProductService**: FastAPI service (port 8001) - Dapr publisher
 - **OrderService**: FastAPI service (port 8002) - Dapr subscriber
 
+## Bedrock Insights Helper
+Use the Bedrock helper to generate Claude and Amazon Titan recommendations about the
+deployment. The helper builds a structured prompt from project context and can run
+offline (no AWS calls) for local testing.
+
+```bash
+source .venv/bin/activate              # if not already active
+python -m tools.bedrock_insights.insights \
+	--context-file docs/ARCHITECTURE.md  # any text/markdown file
+```
+
+Environment variables:
+
+| Name | Purpose | Default |
+| ---- | ------- | ------- |
+| `BEDROCK_REGION` | Region used for the Bedrock `bedrock-runtime` client | `us-east-1` |
+| `BEDROCK_CLAUDE_MODEL_ID` | Claude model identifier | `anthropic.claude-3-sonnet-20240229-v1:0` |
+| `BEDROCK_TITAN_MODEL_ID` | Amazon Titan text model identifier | `amazon.titan-text-premier-v1:0` |
+
+Add `--offline` to preview prompts without contacting AWS. The script outputs the
+prompt plus each model's response so you can diff insights between providers.
+
 ## Architecture
 - **Platform**: Amazon EKS with managed node groups
 - **Runtime**: Dapr for microservices communication
 - **Messaging**: AWS SNS/SQS via Dapr pub/sub component
 - **Monitoring**: CloudWatch Observability, Metrics Server
 - **Registry**: Amazon ECR for container images
+
+See the full AWS architecture diagram in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), which renders the Mermaid diagram at [`docs/aws-architecture.mmd`](docs/aws-architecture.mmd).
 
 ## Access
 - **Pods**: Use `kubectl get pods --all-namespaces`

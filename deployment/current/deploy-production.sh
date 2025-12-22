@@ -22,6 +22,8 @@ wait $CLUSTER_PID && echo "✓ Cluster ready"
 
 echo "Phase 3: Platform Enhancement"
 ./scripts/09-install-eks-addons.sh
+./scripts/19-enable-cloudwatch-logs.sh
+./scripts/18-create-irsa.sh
 ./scripts/05-install-dapr.sh
 ./scripts/06-setup-sns-pubsub.sh
 

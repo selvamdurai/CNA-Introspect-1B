@@ -6,7 +6,8 @@ import httpx
 from tenacity import retry, wait_exponential, stop_after_attempt
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="ProductService")
@@ -33,16 +34,19 @@ def health():
 def list_products():
     logger.info("API: GET /products - Input: None")
     result = _products
-    logger.info(f"API: GET /products - Output: {[product.dict() for product in result]}")
+    logger.info(
+        f"API: GET /products - Output: {[product.dict() for product in result]}")
     return result
 
 
 @app.get("/products/{product_id}", response_model=Product)
 def get_product(product_id: int):
-    logger.info(f"API: GET /products/{product_id} - Input: product_id={product_id}")
+    logger.info(
+        f"API: GET /products/{product_id} - Input: product_id={product_id}")
     for p in _products:
         if p.id == product_id:
-            logger.info(f"API: GET /products/{product_id} - Output: {p.dict()}")
+            logger.info(
+                f"API: GET /products/{product_id} - Output: {p.dict()}")
             return p
     logger.error(f"API: GET /products/{product_id} - Error: Product not found")
     raise HTTPException(status_code=404, detail="Product not found")
@@ -54,11 +58,13 @@ def create_product(p: Product):
     # naive uniqueness by id
     for existing in _products:
         if existing.id == p.id:
-            logger.error(f"API: POST /products - Error: ID {p.id} already exists")
+            logger.error(
+                f"API: POST /products - Error: ID {p.id} already exists")
             raise HTTPException(status_code=400, detail="ID already exists")
     _products.append(p)
     logger.info(f"API: POST /products - Output: {p.dict()}")
     return p
+
 
 @app.post("/publish-order")
 def publish_order(order_data: dict):

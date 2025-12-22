@@ -4,7 +4,8 @@ from typing import List
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="OrderService")
@@ -31,7 +32,8 @@ def health():
 def list_orders():
     logger.info("API: GET /orders - Input: None")
     result = _orders
-    logger.info(f"API: GET /orders - Output: {[order.dict() for order in result]}")
+    logger.info(
+        f"API: GET /orders - Output: {[order.dict() for order in result]}")
     return result
 
 
@@ -40,12 +42,15 @@ def create_order(o: Order):
     logger.info(f"API: POST /orders - Input: {o.dict()}")
     for existing in _orders:
         if existing.id == o.id:
-            logger.error(f"API: POST /orders - Error: ID {o.id} already exists")
+            logger.error(
+                f"API: POST /orders - Error: ID {o.id} already exists")
             raise HTTPException(status_code=400, detail="ID already exists")
     _orders.append(o)
     logger.info(f"API: POST /orders - Output: {o.dict()}")
     return o
 
+
+@app.get("/dapr/subscribe")
 @app.post("/dapr/subscribe")
 def subscribe():
     subscriptions = [{
@@ -55,6 +60,7 @@ def subscribe():
     }]
     logger.info(f"Dapr subscriptions: {subscriptions}")
     return subscriptions
+
 
 @app.post("/orders-handler")
 def handle_order_message(message: dict):

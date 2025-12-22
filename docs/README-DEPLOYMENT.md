@@ -39,29 +39,35 @@ Builds Docker images and pushes to ECR repositories.
 ```
 Creates EKS cluster and initial nodegroup using existing IAM roles.
 
-### 5. Install Dapr
+### 5. Install EKS Add-ons
+```bash
+./scripts/09-install-eks-addons.sh
+```
+Installs CloudWatch Observability, Pod Identity Agent, Metrics Server, and the AWS EBS CSI driver.
+
+### 6. Enable CloudWatch Log Shipping
+```bash
+./scripts/19-enable-cloudwatch-logs.sh
+```
+Creates/updates the CloudWatch log groups and Fluent Bit configuration so product-service, order-service, and Dapr logs flow into CloudWatch.
+
+### 7. Install Dapr
 ```bash
 ./scripts/05-install-dapr.sh
 ```
 Installs Dapr control plane on EKS cluster.
 
-### 6. Setup AWS SNS/SQS
+### 8. Setup AWS SNS/SQS
 ```bash
 ./scripts/06-setup-sns-pubsub.sh
 ```
 Creates SNS topic and SQS queue for pub/sub messaging.
 
-### 7. Deploy Services
+### 9. Deploy Services
 ```bash
 ./scripts/07-deploy-services.sh
 ```
 Deploys Dapr-enabled microservices with pub/sub configuration.
-
-### 8. Install EKS Add-ons
-```bash
-./scripts/09-install-eks-addons.sh
-```
-Installs CloudWatch Observability, Pod Identity Agent, and Metrics Server.
 
 ## Management Scripts
 

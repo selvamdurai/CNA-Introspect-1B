@@ -3,7 +3,7 @@ set -e
 
 AWS_PROFILE="selvam"
 REGION="us-east-1"
-CLUSTER_NAME="cna-introspect-1b-eks"
+CLUSTER_NAME="cna-introspect-eks"
 
 echo "=== EKS Cluster Node Information ==="
 

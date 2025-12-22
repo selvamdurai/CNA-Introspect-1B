@@ -47,10 +47,12 @@ cd deployment/current
 2. **Setup ECR Repositories** - `02-setup-ecr.sh`
 3. **Build & Push Images** - `03-build-push-images.sh`
 4. **Create EKS Cluster** - `04-create-eks-cluster.sh`
-5. **Install Dapr** - `05-install-dapr.sh`
-6. **Setup SNS/SQS** - `06-setup-sns-pubsub.sh`
-7. **Deploy Services** - `07-deploy-services.sh`
-8. **Install EKS Add-ons** - `09-install-eks-addons.sh`
+5. **Install EKS Add-ons & Storage** - `09-install-eks-addons.sh`
+6. **Enable CloudWatch Log Shipping** - `19-enable-cloudwatch-logs.sh`
+7. **Provision IRSA for Pub/Sub** - `18-create-irsa.sh`
+8. **Install Dapr (with scheduler)** - `05-install-dapr.sh`
+9. **Setup SNS/SQS** - `06-setup-sns-pubsub.sh`
+10. **Deploy Services** - `07-deploy-services.sh`
 
 ### Additional Management Scripts
 - **Add Worker Nodes** - `08-add-worker-nodes.sh`

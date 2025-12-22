@@ -36,6 +36,12 @@ echo "Phase 3: Platform Configuration"
 echo "Step 5: Installing EKS Add-ons..."
 ./scripts/09-install-eks-addons.sh
 
+echo "Step 5a: Enabling CloudWatch log shipping..."
+./scripts/19-enable-cloudwatch-logs.sh
+
+echo "Step 5b: Create IRSA for Dapr pubsub (so pods can access SNS/SQS securely)"
+./scripts/18-create-irsa.sh
+
 echo "Step 6: Installing Dapr..."
 ./scripts/05-install-dapr.sh
 

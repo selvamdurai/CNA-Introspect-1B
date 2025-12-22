@@ -3,7 +3,7 @@ set -e
 
 AWS_PROFILE="selvam"
 REGION="us-east-1"
-CLUSTER_NAME="cna-introspect-1b-eks"
+CLUSTER_NAME="cna-introspect-eks"
 ACCOUNT_ID=$(aws sts get-caller-identity --profile $AWS_PROFILE --query Account --output text)
 
 echo "=== Adding worker nodes to EKS cluster ==="

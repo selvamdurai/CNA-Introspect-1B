@@ -3,13 +3,13 @@ set -e
 
 AWS_PROFILE="selvam"
 REGION="us-east-1"
-CLUSTER_NAME="cna-introspect-1b-eks"
+CLUSTER_NAME="cna-introspect-eks"
 
 echo "=== Creating EKS cluster with eksctl ==="
 
 # Delete existing cluster if it exists
 echo "Cleaning up any existing cluster..."
-eksctl delete cluster --name $CLUSTER_NAME --region $REGION --profile $PROFILE --wait 2>/dev/null || echo "No existing cluster to delete"
+eksctl delete cluster --name $CLUSTER_NAME --region $REGION --profile $AWS_PROFILE --wait 2>/dev/null || echo "No existing cluster to delete"
 
 # Create cluster with eksctl (includes all necessary add-ons)
 echo "Creating EKS cluster $CLUSTER_NAME..."

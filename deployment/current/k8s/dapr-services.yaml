@@ -16,6 +16,7 @@ spec:
         dapr.io/app-id: "product-service"
         dapr.io/app-port: "8001"
     spec:
+      serviceAccountName: dapr-pubsub-sa
       containers:
       - name: product-service
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/product-service:latest
@@ -51,6 +52,7 @@ spec:
         dapr.io/app-id: "order-service"
         dapr.io/app-port: "8002"
     spec:
+      serviceAccountName: dapr-pubsub-sa
       containers:
       - name: order-service
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/order-service:latest
@@ -74,5 +76,5 @@ metadata:
   name: order-subscription
 spec:
   topic: orders
-  route: /orders
+  route: /orders-handler
   pubsubname: pubsub

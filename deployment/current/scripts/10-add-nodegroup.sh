@@ -3,7 +3,7 @@ set -e
 
 AWS_PROFILE="selvam"
 REGION="us-east-1"
-CLUSTER_NAME="cna-introspect-1b-eks"
+CLUSTER_NAME="cna-introspect-eks"
 NODEGROUP_NAME="${1:-additional-workers}"
 INSTANCE_TYPE="${2:-t3.medium}"
 DESIRED_SIZE="${3:-2}"
